@@ -16,4 +16,10 @@ service {
       interval = "10s"
     }
   ]
+
+  connect {
+    sidecar_service {
+      proxy {}
+    }
+  }
 }

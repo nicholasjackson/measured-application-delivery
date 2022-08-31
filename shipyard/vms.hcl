@@ -42,6 +42,12 @@ variable "cd_consul_additional_volume" {
   }
 }
 
+variable "consul_releaser_acl_token_file" {
+  description = "location of the ACL token that can be used by Consul Release Controller"
+  default     = "${var.cd_consul_data}/bootstrap.token"
+}
+
+
 module "vms" {
   source = "github.com/shipyard-run/blueprints?ref=e51d3ce48455b56edaf2a04e67182b846789daef/modules//consul-docker"
 }

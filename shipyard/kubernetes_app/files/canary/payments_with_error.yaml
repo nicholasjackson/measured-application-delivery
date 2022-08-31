@@ -1,42 +1,13 @@
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: payments
-  namespace: default
-  labels:
-    app: metrics
-spec:
-  selector:
-    app: payments
-  ports:
-    - name: http
-      protocol: TCP
-      port: 9090
-      targetPort: 9090
-    - name: metrics # prom scraping port
-      protocol: TCP
-      port: 20200
-      targetPort: 20200
-
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: payments
-  namespace: default
-automountServiceAccountToken: false
-
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: payments-deployment
   namespace: default
   labels:
-    app: payments_v1
+    app: payments_with_error
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: payments
@@ -45,18 +16,22 @@ spec:
       labels:
         app: payments
         metrics: enabled
-    spec:
+      annotations:
+        consul.hashicorp.com/connect-inject: 'true'
+        #consul.hashicorp.com/transparent-proxy: 'true'
+        #consul.hashicorp.com/transparent-proxy-overwrite-probes: 'true'
+    spec:  
       serviceAccountName: payments
       automountServiceAccountToken: true
       containers:
         - name: payments
-          image: nicholasjackson/fake-service:v0.23.1
+          image: nicholasjackson/fake-service:v0.22.8
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9090
           env:
             - name: "NAME"
-              value: "Payments V1"
+              value: "Payments With Error"
             - name: "LISTEN_ADDR"
               value: "0.0.0.0:9090"
             - name: "TIMING_50_PERCENTILE"
@@ -65,6 +40,8 @@ spec:
               value: "http://tempo:9411"
             - name: "READY_CHECK_RESPONSE_DELAY"
               value: "10s"
+            - name: "ERROR_RATE"
+              value: "0.5"
           readinessProbe:
             httpGet:
               path: /ready
@@ -77,3 +54,10 @@ spec:
               port: 9090
             periodSeconds: 5
             initialDelaySeconds: 5
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"

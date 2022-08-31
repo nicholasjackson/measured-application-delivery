@@ -59,6 +59,11 @@ variable "consul_auto_inject_enabled" {
   default     = true
 }
 
+variable "consul_auto_inject_deny_namespaces" {
+  description = "List of Kubernetes namespaces where auto inject is ignored"
+  default     = ["monitoring"]
+}
+
 variable "consul_ports_gateway" {
   default = 30443
 }
@@ -103,9 +108,18 @@ variable "consul_set_outputs" {
   default = false
 }
 
+variable "consul_monitoring_enabled" {
+  description = "Should the monitoring stack, Prometheus, Grafana, Loki be installed"
+  default     = true
+}
+
 variable "consul_release_controller_enabled" {
   description = "Should the Consul release controller be enabled?"
   default     = true
+}
+
+variable "consul_acl_token_file" {
+  default = "${var.cd_consul_data}/replication.token"
 }
 
 k8s_cluster "kubernetes" {
@@ -119,16 +133,6 @@ k8s_cluster "kubernetes" {
   }
 }
 
-# Create the secret consul-bootstrap-acl-token needed by 
-# the release controller
-template "release_acl_secret" {
-  soruce = <<-EOF
-
-  EOF
-
-  destination = "${data("release_controller")}/bootstrap_acl.yaml"
-}
-
 output "KUBECONFIG" {
   value = k8s_config("kubernetes")
 }
@@ -136,5 +140,6 @@ output "KUBECONFIG" {
 module "kubernetes_consul" {
   depends_on = ["module.vms"]
 
-  source = "github.com/shipyard-run/blueprints?ref=891c937844bdbec673f5428b1a3c8bff4e207727/modules//kubernetes-consul"
+  #source = "github.com/shipyard-run/blueprints?ref=891c937844bdbec673f5428b1a3c8bff4e207727/modules//kubernetes-consul"
+  source = "/Users/nicj/code/src/github.com/shipyard-run/blueprints/modules/kubernetes-consul"
 }

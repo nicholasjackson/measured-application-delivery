@@ -1,10 +1,8 @@
-k8s_config "payments" {
+k8s_config "application" {
   cluster = "k8s_cluster.kubernetes"
 
   paths = [
-    "./files/defaults.yaml",
-    "./files/payments.yaml",
-    "./files/web.yaml",
+    "${file_dir()}/files"
   ]
 
   wait_until_ready = true

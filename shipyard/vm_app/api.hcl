@@ -1,10 +1,10 @@
-copy "web_config" {
-  source      = "./files/web"
-  destination = data("web")
+copy "api_config" {
+  source      = "./files/api"
+  destination = data("api")
 }
 
-container "1-web" {
-  depends_on = ["copy.consul_ca", "exec_remote.agent_consul_bootstrap", "copy.web_config"]
+container "1-api" {
+  depends_on = ["copy.consul_ca", "exec_remote.agent_consul_bootstrap", "copy.api_config"]
 
   network {
     name = "network.${var.cd_consul_network}"
@@ -16,17 +16,17 @@ container "1-web" {
 
   env {
     key   = "CONSUL_HTTP_TOKEN_FILE"
-    value = "/config/web-agent.token"
+    value = "/config/api-agent.token"
   }
 
   env {
     key   = "NAME"
-    value = "WEB Primary"
+    value = "API Primary"
   }
 
   env {
     key   = "SERVICE_ID"
-    value = "web-1"
+    value = "api-1"
   }
 
   volume {
@@ -35,13 +35,13 @@ container "1-web" {
   }
 
   volume {
-    source      = "${data("agent_config")}/web-token-config.hcl"
+    source      = "${data("agent_config")}/api-token-config.hcl"
     destination = "/config/token-config.hcl"
   }
 
   volume {
-    source      = "${data("agent_config")}/web-agent.token"
-    destination = "/config/web-agent.token"
+    source      = "${data("agent_config")}/api-agent.token"
+    destination = "/config/api-agent.token"
   }
 
   volume {
@@ -50,12 +50,12 @@ container "1-web" {
   }
 
   volume {
-    source      = "${data("web")}/web-service-1.hcl"
-    destination = "/config/web-service-1.hcl"
+    source      = "${data("api")}/api-service-1.hcl"
+    destination = "/config/api-service-1.hcl"
   }
 
   volume {
-    source      = "${data("web")}/web-startup.sh"
+    source      = "${data("api")}/api-startup.sh"
     destination = "/app/startup.sh"
   }
 
@@ -72,7 +72,7 @@ container "1-web" {
 
   port {
     local  = 9090
-    host   = 9090
+    host   = 19090
     remote = 9090
   }
 }
