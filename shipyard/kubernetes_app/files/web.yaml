@@ -1,0 +1,56 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+spec:
+  selector:
+    group: web
+  ports:
+    - name: http
+      protocol: TCP
+      port: 9090
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: web
+automountServiceAccountToken: true
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-primary-deployment
+  labels:
+    app: web_primary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web_primary
+  template:
+    metadata:
+      labels:
+        app: web_primary
+        group: web
+        metrics: enabled
+      annotations:
+        consul.hashicorp.com/service-tags: primary
+        consul.hashicorp.com/service-meta-version: primary
+    spec:
+      serviceAccountName: web
+      containers:
+        - name: web
+          image: nicholasjackson/fake-service:v0.24.2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9090
+          env:
+            - name: "NAME"
+              value: "WEB Primary"
+            - name: "LISTEN_ADDR"
+              value: "127.0.0.1:9090"
+            - name: "UPSTREAM_URIS"
+              value: "http://payments.default.svc"

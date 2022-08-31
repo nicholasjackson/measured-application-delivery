@@ -1,0 +1,29 @@
+apiVersion: consul.hashicorp.com/v1alpha1
+kind: ServiceResolver
+metadata:
+  name: payments
+spec:
+  subsets:
+    primary:
+      filter: 'Service.Tags contains "primary"'
+    candidate:
+      filter: 'Service.Tags contains "candidate"'
+
+---
+apiVersion: consul.hashicorp.com/v1alpha1
+kind: ServiceRouter
+
+metadata:
+  name: payments
+spec:
+  routes:
+    - match:
+        http:
+          pathPrefix: /primary
+      destination:
+        serviceSubset: primary
+    - match:
+        http:
+          pathPrefix: /candidate
+      destination:
+        serviceSubset: candidate

@@ -1,0 +1,41 @@
+  upstream all {
+    {{- range service "payments" }}
+    server {{ .Address }}:{{ .Port }};{{ end }}
+  }
+
+  upstream payments-primary {
+    {{- range service "primary.payments" }}
+    server {{ .Address }}:{{ .Port }};{{ end }}
+  }
+
+  upstream payments-candidate {
+    {{- range service "candidate.payments" }}
+    server {{ .Address }}:{{ .Port }};{{ end }}
+  }
+
+  upstream payments-weighted {
+    {{- range service "payments" }}
+    {{ if and (.Tags | contains "primary") (ne ( keyOrDefault "/nginx/payments-traffic/primary" "100" ) "0") }}server {{ .Address }}:{{ .Port }} weight={{ keyOrDefault "/nginx/api-traffic/primary" "100" }};{{ end }}
+    {{ if and (.Tags | contains "candidate") (ne ( keyOrDefault "/nginx/payments-traffic/primary" "100" ) "100") }}server {{ .Address }}:{{ .Port }} weight={{ 100 | subtract ( keyOrDefault "/nginx/payments-traffic/primary" "100" | parseInt ) }};{{ end }}{{ end }}
+  }
+
+
+    location / {
+      proxy_pass      http://payments.service.consul:9090;
+    }
+
+    location /all {
+      proxy_pass      http://all;
+    }
+
+    location /primary {
+      proxy_pass      http://payments-primary;
+    }
+
+    location /candidate {
+      proxy_pass      http://payments-candidate;
+    }
+
+    location /weighted {
+      proxy_pass      http://payments-weighted;
+    }
