@@ -56,7 +56,7 @@ spec:
             - containerPort: 9090
           env:
             - name: "NAME"
-              value: "Payments V1"
+              value: "Payments V1 Kubernetes"
             - name: "LISTEN_ADDR"
               value: "0.0.0.0:9090"
             - name: "TIMING_50_PERCENTILE"

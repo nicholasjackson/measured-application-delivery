@@ -23,7 +23,7 @@ spec:
       interval: "30s"
       trafficStep: 20
       maxTraffic: 100
-      errorThreshold: 5
+      errorThreshold: 2
   monitor:
     pluginName: "prometheus"
     config:

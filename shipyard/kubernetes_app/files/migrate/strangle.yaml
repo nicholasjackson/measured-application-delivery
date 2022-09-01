@@ -1,0 +1,26 @@
+apiVersion: consul.hashicorp.com/v1alpha1
+kind: ServiceResolver
+metadata:
+  name: currency
+spec:
+  redirect:
+    service: currency
+    datacenter: kubernetes
+
+---
+apiVersion: consul.hashicorp.com/v1alpha1
+kind: ServiceRouter
+metadata:
+  name: payments
+spec:
+  routes:
+    - match:
+        http:
+          pathPrefix: /currency
+      destination:
+        service: currency
+    - match:
+        http:
+          pathPrefix: /
+      destination:
+        service: payments

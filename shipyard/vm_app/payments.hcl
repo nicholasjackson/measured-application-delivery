@@ -16,7 +16,7 @@ container "1-payments" {
 
   env {
     key   = "NAME"
-    value = "Payments - 1 (primary)"
+    value = "Payments V1 VM"
   }
 
   env {

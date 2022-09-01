@@ -1,33 +1,62 @@
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: currency
+  namespace: default
+  labels:
+    app: metrics
+spec:
+  selector:
+    app: currency
+  ports:
+    - name: http
+      protocol: TCP
+      port: 9090
+      targetPort: 9090
+    - name: metrics # prom scraping port
+      protocol: TCP
+      port: 20200
+      targetPort: 20200
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: currency
+  namespace: default
+automountServiceAccountToken: false
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: payments-deployment
+  name: currency-deployment
   namespace: default
   labels:
-    app: payments_v2
+    app: currency_v1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: payments
+      app: currency
   template:
     metadata:
       labels:
-        app: payments
+        app: currency
         metrics: enabled
     spec:
-      serviceAccountName: payments
+      serviceAccountName: currency
       automountServiceAccountToken: true
       containers:
-        - name: payments
-          image: nicholasjackson/fake-service:v0.22.8
+        - name: currency
+          image: nicholasjackson/fake-service:v0.23.1
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9090
           env:
             - name: "NAME"
-              value: "PAYMENTS V2 Kubernetes"
+              value: "Currency V1 Kubernetes"
             - name: "LISTEN_ADDR"
               value: "0.0.0.0:9090"
             - name: "TIMING_50_PERCENTILE"
@@ -48,10 +77,3 @@ spec:
               port: 9090
             periodSeconds: 5
             initialDelaySeconds: 5
-          resources:
-            requests:
-              memory: "128Mi"
-              cpu: "250m"
-            limits:
-              memory: "256Mi"
-              cpu: "500m"

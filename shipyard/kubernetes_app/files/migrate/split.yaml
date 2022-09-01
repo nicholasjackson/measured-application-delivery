@@ -1,0 +1,21 @@
+---
+apiVersion: consul.hashicorp.com/v1alpha1
+kind: ServiceResolver
+metadata:
+  name: payments-kubernetes
+spec:
+  redirect:
+    service: payments
+    datacenter: kubernetes
+
+---
+apiVersion: consul.hashicorp.com/v1alpha1
+kind: ServiceSplitter
+metadata:
+  name: payments
+spec:
+  splits:
+    - weight: 50
+      # will default to service with same name as config entry ("payments")
+    - weight: 50
+      service: payments-kubernetes

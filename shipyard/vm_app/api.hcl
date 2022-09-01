@@ -21,7 +21,7 @@ container "1-api" {
 
   env {
     key   = "NAME"
-    value = "API Primary"
+    value = "API V1 VM"
   }
 
   env {

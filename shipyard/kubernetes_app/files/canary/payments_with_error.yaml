@@ -16,11 +16,7 @@ spec:
       labels:
         app: payments
         metrics: enabled
-      annotations:
-        consul.hashicorp.com/connect-inject: 'true'
-        #consul.hashicorp.com/transparent-proxy: 'true'
-        #consul.hashicorp.com/transparent-proxy-overwrite-probes: 'true'
-    spec:  
+    spec:
       serviceAccountName: payments
       automountServiceAccountToken: true
       containers:
@@ -31,7 +27,7 @@ spec:
             - containerPort: 9090
           env:
             - name: "NAME"
-              value: "Payments With Error"
+              value: "Payments V3 Kubernetes"
             - name: "LISTEN_ADDR"
               value: "0.0.0.0:9090"
             - name: "TIMING_50_PERCENTILE"
