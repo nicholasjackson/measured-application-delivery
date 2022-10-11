@@ -47,7 +47,6 @@ variable "consul_releaser_acl_token_file" {
   default     = "${var.cd_consul_data}/bootstrap.token"
 }
 
-
 module "vms" {
   source = "github.com/shipyard-run/blueprints?ref=e51d3ce48455b56edaf2a04e67182b846789daef/modules//consul-docker"
 }

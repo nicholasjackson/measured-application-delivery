@@ -140,6 +140,6 @@ output "KUBECONFIG" {
 module "kubernetes_consul" {
   depends_on = ["module.vms"]
 
-  #source = "github.com/shipyard-run/blueprints?ref=891c937844bdbec673f5428b1a3c8bff4e207727/modules//kubernetes-consul"
-  source = "/Users/nicj/code/src/github.com/shipyard-run/blueprints/modules/kubernetes-consul"
+  source = "github.com/shipyard-run/blueprints?ref=39be46e70c281b04c56680e7a885c9697ce41385/modules//kubernetes-consul"
+  #source = "/Users/nicj/code/src/github.com/shipyard-run/blueprints/modules/kubernetes-consul"
 }
